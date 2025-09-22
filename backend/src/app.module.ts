@@ -3,19 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './user.model';
-import { Hit } from './hit.model';
+import { UserRounds } from './userrounds.model';
 import { Round } from './round.model';
 
 @Module({
   imports: [
     SequelizeModule.forRoot({
-      dialect: 'postgresql',
+      dialect: 'postgres',
       host: 'localhost',
-      port: 5432,
+      port: 5438,
       username: 'guss',
       password: 'guss',
       database: 'guss',
-      models: [User, Round, Hit],
+      models: [User, Round, UserRounds],
     }),
   ],
   controllers: [AppController],

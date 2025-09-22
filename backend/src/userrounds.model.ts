@@ -15,7 +15,7 @@ export class UserRounds extends Model {
   @Column
   roundId: string;
 
-  // число попаданий
+  // число попаданий (нажатий)
   @Column({
     defaultValue: 0,
   })

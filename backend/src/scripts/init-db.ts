@@ -8,14 +8,15 @@ import { UserRounds } from '../userrounds.model';
 async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(AppModule);
 
-  // await User.destroy({ where: {} });
-  //
   await User.sync();
   await Round.sync();
   await UserRounds.sync();
 
   const hashedPassword = await hash('admin123', 10);
-  if (!(await User.findOne({ username: 'amdin' }))) {
+  const existingAdmin = await User.findOne({ where: { username: 'admin' } });
+
+  if (!existingAdmin) {
+    console.log('Admin does not exist, creating');
     await User.create({
       username: 'admin',
       password: hashedPassword,

@@ -5,12 +5,14 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../user.model';
 import { hash, compare } from 'bcrypt';
 import { LoginOrRegisterDto } from '../login_or_register.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(
@@ -36,7 +38,9 @@ export class AuthService {
 
   login(user: User) {
     return {
-      access_token: this.jwtService.sign({ username: user.username }),
+      access_token: this.jwtService.sign({
+        username: user.username,
+      }),
     };
   }
 }

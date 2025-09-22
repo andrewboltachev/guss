@@ -15,10 +15,10 @@ import { UserRounds } from './userrounds.model';
 export class User extends Model {
   @PrimaryKey
   @Column
-  username: string;
+  declare username: string;
 
   @Column
-  password: string;
+  declare password: string;
 
   @BelongsToMany(() => Round, () => UserRounds)
   rounds: Round[];

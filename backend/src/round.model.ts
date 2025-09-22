@@ -1,10 +1,17 @@
-import { BelongsToMany, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import {
+  BelongsToMany,
+  Column,
+  DataType,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 import { User } from './user.model';
 // eslint-disable-next-line import/no-cycle
 import { UserRounds } from './userrounds.model';
 
 @Table({
-    tableName: 'rounds',
+  tableName: 'rounds',
 })
 export class Round extends Model {
   @PrimaryKey

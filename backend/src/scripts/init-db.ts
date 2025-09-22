@@ -15,10 +15,12 @@ async function bootstrap() {
   await UserRounds.sync();
 
   const hashedPassword = await hash('admin123', 10);
-  const newUser = await User.create({
-    username: 'admin',
-    password: hashedPassword,
-  });
+  if (!(await User.findOne({ username: 'amdin' }))) {
+    await User.create({
+      username: 'admin',
+      password: hashedPassword,
+    });
+  }
 
   console.log('Database seeded successfully.');
 

@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Get,
   NotFoundException,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -80,7 +81,7 @@ export class AppController {
   // Round Detail Page
   @UseGuards(AuthGuard('jwt'))
   @Get('/round/:id')
-  async getRound(@Req() req: Request, id: string) {
+  async getRound(@Req() req: Request, @Param('id') id: string) {
     const round = await Round.findOne({ where: { id }, plain: true });
     const user: User = req.user as unknown as User;
     if (!round) {
@@ -124,15 +125,22 @@ export class AppController {
         },
       });
     }
-    return {
-      ...round,
+    const data: CreationAttributes<Round> & {
+      status: string;
+      score: number;
+      totalScore?: number;
+      bestScore?: number;
+    } = {
+      ...round.toJSON(),
       ...extra,
     };
+
+    return data;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/tap/:id')
-  async tap(@Req() req: Request, id: string) {
+  async tap(@Req() req: Request, @Param('id') id: string) {
     const round = await Round.findOne({ where: { id }, plain: true });
     if (!round) {
       throw new NotFoundException();
@@ -149,17 +157,22 @@ export class AppController {
 
     // Для начала пробуем самый короткий путь — если UserRounds уже создан
     // Здесь мы выполняем "атомарную" операцию hits = hits + 1
-    const [affectedRows] = await UserRounds.increment({ hits: 1 }, { where });
+    const [, affectedCount] = await UserRounds.increment(
+      { hits: 1 },
+      { where },
+    );
+    console.log({ affectedCount });
 
-    if (!affectedRows) {
+    if (!affectedCount) {
       // Если UserRecords не нашлось, нужно его создать
       try {
-        await UserRounds.create({
+        const created = await UserRounds.create({
           ...where,
           hits: 1,
           score: 1,
         });
         needToUpdateScore = false;
+        console.log({ created });
       } catch (e) {
         if (e instanceof UniqueConstraintError) {
           const parent = e.parent as unknown as {
@@ -197,6 +210,7 @@ export class AppController {
 
     const updatedUserRound = (await UserRounds.findOne({
       where,
+      attributes: ['score'],
     })) as UserRounds;
     return updatedUserRound.score;
   }

@@ -82,13 +82,28 @@ export class AppController {
       throw new NotFoundException();
     }
     const currentDate = new Date().getTime();
+    let status: string = 'cooldown';
+    if (currentDate > round?.startedAt.getTime()) {
+      status = 'active';
+    }
     if (currentDate > round?.endedAt.getTime()) {
-      await UserRounds.findOne({
-        where: { username: user.username },
-      });
+      status = 'ended';
+    }
+    const extra: {
+      status: string;
+      score: number;
+      totalScore?: number;
+      bestScore?: number;
+    } = { status, score: 0 };
+    const userRounds = await UserRounds.findOne({
+      where: { username: user.username, roundId: round.id },
+    });
+    if (userRounds) {
+      extra.score = userRounds?.score;
     }
     return {
       ...round,
+      ...extra,
     };
   }
 }

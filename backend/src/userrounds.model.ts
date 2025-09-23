@@ -8,11 +8,15 @@ import { Round } from './round.model';
 })
 export class UserRounds extends Model {
   @ForeignKey(() => User)
-  @Column
+  @Column({
+    unique: 'uniqueForUserAndRound',
+  })
   username: string;
 
   @ForeignKey(() => Round)
-  @Column
+  @Column({
+    unique: 'uniqueForUserAndRound',
+  })
   roundId: string;
 
   // число попаданий (нажатий)

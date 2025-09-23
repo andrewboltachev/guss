@@ -10,7 +10,12 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 import { Round } from './round.model';
-import { CreationAttributes, Op } from 'sequelize';
+import {
+  CreationAttributes,
+  literal,
+  Op,
+  UniqueConstraintError,
+} from 'sequelize';
 import { addSecondsToDate } from './utils';
 import { ConfigService } from '@nestjs/config';
 import { v4 } from 'uuid';
@@ -72,7 +77,7 @@ export class AppController {
     return { id: round.id };
   }
 
-  // Round Page
+  // Round Detail Page
   @UseGuards(AuthGuard('jwt'))
   @Get('/round/:id')
   async getRound(@Req() req: Request, id: string) {
@@ -87,7 +92,7 @@ export class AppController {
       status = 'active';
     }
     if (currentDate > round?.endedAt.getTime()) {
-      status = 'ended';
+      status = 'finished';
     }
     const extra: {
       status: string;
@@ -101,9 +106,89 @@ export class AppController {
     if (userRounds) {
       extra.score = userRounds?.score;
     }
+    if (status === 'finished') {
+      extra.bestScore = await UserRounds.max('score', {
+        where: {
+          username: {
+            [Op.ne]: 'nikita',
+          },
+          roundId: round.id,
+        },
+      });
+      extra.totalScore = await UserRounds.max('score', {
+        where: {
+          username: {
+            [Op.ne]: 'nikita',
+          },
+          roundId: round.id,
+        },
+      });
+    }
     return {
       ...round,
       ...extra,
     };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/tap/:id')
+  async tap(@Req() req: Request, id: string) {
+    const round = await Round.findOne({ where: { id }, plain: true });
+    if (!round) {
+      throw new NotFoundException();
+    }
+    const user: User = req.user as unknown as User;
+
+    // Назначение этой переменной будет ясно дальше
+    let needToUpdateScore: boolean = true;
+
+    // Для начала пробуем самый короткий путь — если UserRounds уже создан
+    // Здесь мы выполняем "атомарную" операцию hits = hits + 1
+    const [affectedRows] = await UserRounds.increment(
+      { hits: 1 },
+      {
+        where: {
+          username: user.username,
+          roundId: round.id,
+        },
+      },
+    );
+
+    if (!affectedRows) {
+      // Если UserRecords не нашлось, нужно его создать
+      try {
+        await UserRounds.create({
+          username: user.username,
+          roundId: round.id,
+          hits: 1,
+          score: 1,
+        });
+        needToUpdateScore = false;
+      } catch (e) {
+        if (e instanceof UniqueConstraintError) {
+          const parent = e.parent as unknown as {
+            constraint: string;
+            table: string;
+          };
+          if (parent.constraint === 'user_rounds_pkey') {
+            // Коллизия — другой запрос уже создал, поэтому снова просто прибавляем
+          }
+        }
+      }
+    }
+    if (needToUpdateScore) {
+      await UserRounds.update(
+        {
+          score: literal(`hits + floor(hits / 11)`),
+        },
+        {
+          where: {
+            username: user.username,
+            roundId: round.id,
+          },
+        },
+      );
+    }
+    return {};
   }
 }

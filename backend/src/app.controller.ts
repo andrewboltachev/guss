@@ -1,14 +1,17 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
-import { User } from './user.model'; // <-- Import Request here
+import { User } from './user.model';
+import { Round } from './round.model';
+import { CreationAttributes, Op } from 'sequelize';
+import { addSecondsToDate } from './utils';
+import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private configService: ConfigService) {}
 
-
+  // test endpoint
   @UseGuards(AuthGuard('jwt'))
   @Get()
   getHello(@Req() req: Request): string {
@@ -20,8 +23,39 @@ export class AppController {
     return `Hello, world! You are logged in as: ${user.username}!`;
   }
 
-  @Get(':id')
-  getId(@Param('id') id: string) {
-    return `Id: ${id}!!`;
+  // Post List
+  @Get('/active-rounds/')
+  async getActiveRounds() {
+    const roundDuration: number = this.configService.get<number>(
+      'ROUND_DURATION',
+    ) as number;
+    const cooldownDuration: number = this.configService.get<number>(
+      'COOLDOWN_DURATION',
+    ) as number;
+
+    const currentDate = new Date();
+
+    const activeDate = addSecondsToDate(
+      currentDate,
+      -roundDuration,
+    );
+
+    const earliestDate = addSecondsToDate(
+      activeDate,
+      -cooldownDuration,
+    );
+
+    const rounds: Round[] = await Round.findAll({
+      where: { createdAt: { [Op.gte]: earliestDate } },
+      plain: true,
+    });
+
+    const results: Array<CreationAttributes<Round> & { status: string }> = [];
+    for (const round of rounds) {
+      const isActive = round.createdAt >= activeDate;
+      const status = isActive ? 'active' : 'cooldown';
+      results.push({ ...round, status });
+    }
+    return results;
   }
 }

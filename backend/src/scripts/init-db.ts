@@ -8,7 +8,7 @@ import { UserRounds } from '../userrounds.model';
 async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(AppModule);
 
-  await User.sync();
+  //await User.sync();
   await Round.sync();
   await UserRounds.sync();
 

@@ -3,4 +3,8 @@ const addSecondsToDate = (date1: Date, secondsToAdd: number) => {
   return new Date(date1.getTime() + millisecondsToAdd);
 };
 
-export { addSecondsToDate };
+const secondsBetweenDates = (dateFrom: Date, dateTo: Date) => {
+  return Math.round((dateTo.getTime() - dateFrom.getTime()) / 1000);
+};
+
+export { addSecondsToDate, secondsBetweenDates };

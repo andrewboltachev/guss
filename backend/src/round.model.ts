@@ -12,6 +12,8 @@ import { UserRounds } from './userrounds.model';
 
 @Table({
   tableName: 'rounds',
+  // чтобы заполнять createdAt вручную
+  timestamps: false,
 })
 export class Round extends Model {
   @PrimaryKey
@@ -23,4 +25,14 @@ export class Round extends Model {
 
   @BelongsToMany(() => User, () => UserRounds)
   users: User[];
+
+  // чтобы заполнять вручную
+  @Column
+  declare createdAt: Date;
+
+  @Column
+  declare startedAt: Date;
+
+  @Column
+  declare endedAt: Date;
 }

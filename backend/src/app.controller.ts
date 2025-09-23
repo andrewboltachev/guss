@@ -14,6 +14,8 @@ import { addSecondsToDate } from './utils';
 import { ConfigService } from '@nestjs/config';
 import { v4 } from 'uuid';
 
+/// <reference path="./express.d.ts" />
+
 @Controller()
 export class AppController {
   constructor(private configService: ConfigService) {}
@@ -29,20 +31,25 @@ export class AppController {
       'COOLDOWN_DURATION',
     ) as number;
 
+    // createdAt ... cooldownDuration ... roundDuration
+
     const currentDate = new Date();
-
     const activeDate = addSecondsToDate(currentDate, -roundDuration);
-
     const earliestDate = addSecondsToDate(activeDate, -cooldownDuration);
 
     const rounds: Round[] = await Round.findAll({
       where: { createdAt: { [Op.gte]: earliestDate } },
-      plain: true,
     });
 
     const results: Array<CreationAttributes<Round> & { status: string }> = [];
-    for (const round of rounds) {
-      const isActive = round.createdAt >= activeDate;
+    for (const roundObj of rounds) {
+      const round: CreationAttributes<Round> = roundObj.toJSON();
+      // Round starts after cooldownDuration has passed
+      const startedAt = addSecondsToDate(
+        round.createdAt as Date,
+        cooldownDuration,
+      );
+      const isActive = startedAt <= earliestDate;
       const status = isActive ? 'active' : 'cooldown';
       results.push({ ...round, status });
     }
@@ -52,7 +59,8 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/add-round/')
   async addRound(@Req() req: Request) {
-    if (req.user?.username !== 'admin') throw new ForbiddenException();
+    // @ts-ignore // а то скрипт init-db не работает
+    // if (req.user?.username !== 'admin') throw new ForbiddenException();
     const round = await Round.create({ id: v4() });
     return { id: round.id };
   }

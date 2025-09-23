@@ -1,9 +1,15 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 import { User } from './user.model';
 import { Round } from './round.model';
-import { CreationAttributes, Op } from 'sequelize';
+import { CreationAttributes, Op, UUIDV4 } from 'sequelize';
 import { addSecondsToDate } from './utils';
 import { ConfigService } from '@nestjs/config';
 
@@ -35,15 +41,9 @@ export class AppController {
 
     const currentDate = new Date();
 
-    const activeDate = addSecondsToDate(
-      currentDate,
-      -roundDuration,
-    );
+    const activeDate = addSecondsToDate(currentDate, -roundDuration);
 
-    const earliestDate = addSecondsToDate(
-      activeDate,
-      -cooldownDuration,
-    );
+    const earliestDate = addSecondsToDate(activeDate, -cooldownDuration);
 
     const rounds: Round[] = await Round.findAll({
       where: { createdAt: { [Op.gte]: earliestDate } },
@@ -57,5 +57,13 @@ export class AppController {
       results.push({ ...round, status });
     }
     return results;
+  }
+
+  // Post List
+  @Get('/active-rounds/')
+  async createRound(@Req() req: Request) {
+    if (req.user?.username !== 'admin') throw new ForbiddenException();
+    const round = await Round.create({ id: UUIDV4() });
+    return { id: round.id };
   }
 }

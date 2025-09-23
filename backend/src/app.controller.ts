@@ -2,34 +2,24 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
-import { User } from './user.model';
 import { Round } from './round.model';
-import { CreationAttributes, Op, UUIDV4 } from 'sequelize';
+import { CreationAttributes, Op } from 'sequelize';
 import { addSecondsToDate } from './utils';
 import { ConfigService } from '@nestjs/config';
+import { v4 } from 'uuid';
 
 @Controller()
 export class AppController {
   constructor(private configService: ConfigService) {}
 
-  // test endpoint
-  @UseGuards(AuthGuard('jwt'))
-  @Get()
-  getHello(@Req() req: Request): string {
-    // The user object is attached to the request by the AuthGuard
-    const user = req.user as User;
-
-    // Example: Use the user's email from the payload
-    // Note: The structure of the user object depends on your JwtStrategy's validate method
-    return `Hello, world! You are logged in as: ${user.username}!`;
-  }
-
   // Post List
+  @UseGuards(AuthGuard('jwt'))
   @Get('/active-rounds/')
   async getActiveRounds() {
     const roundDuration: number = this.configService.get<number>(
@@ -59,11 +49,20 @@ export class AppController {
     return results;
   }
 
-  // Post List
-  @Get('/active-rounds/')
-  async createRound(@Req() req: Request) {
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/add-round/')
+  async addRound(@Req() req: Request) {
     if (req.user?.username !== 'admin') throw new ForbiddenException();
-    const round = await Round.create({ id: UUIDV4() });
+    const round = await Round.create({ id: v4() });
     return { id: round.id };
+  }
+
+  // Round Page
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/round/:id')
+  async getRound(@Req() req: Request) {
+    // if (req.user?.username !== 'admin') throw new ForbiddenException();
+    // const round = await Round.create({ id: UUIDV4() });
+    // return { id: round.id };
   }
 }

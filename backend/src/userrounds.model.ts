@@ -11,13 +11,13 @@ export class UserRounds extends Model {
   @Column({
     unique: 'uniqueForUserAndRound',
   })
-  username: string;
+  declare username: string;
 
   @ForeignKey(() => Round)
   @Column({
     unique: 'uniqueForUserAndRound',
   })
-  roundId: string;
+  declare roundId: string;
 
   // число попаданий (нажатий)
   @Column({

@@ -209,12 +209,10 @@ export class AppController {
       );
     }
 
-    const userRounds = (await UserRounds.findOne({
+    const { score } = (await UserRounds.findOne({
       where,
-      //attributes: ['score'],
-      //plain: true,
+      attributes: ['score'],
     })) as UserRounds;
-    console.log({ userRounds });
-    return {};
+    return { score };
   }
 }

@@ -159,20 +159,20 @@ export class AppController {
     // Здесь мы выполняем "атомарную" операцию hits = hits + 1
     // increment не подходит, т.к. static-метод increment всегда делает
     // RETURNING *, а нужно только количество
-    const affectedCount = await UserRounds.update(
+    const [affectedCount] = await UserRounds.update(
       {
         hits: literal('hits + 1'),
       },
       { where, silent: true },
     );
-    console.log({ affectedResult });
+    console.log({ affectedCount });
 
     // [0][1] — affectedCount
     // affectedResult это (внутри Promise)
     // почему-то не [affectedRows: M[], affectedCount?: number]
     // а Array<[affectedRows: M[], affectedCount?: number]>
     // т.е. не заявленное значение, а целый массив таких
-    if (!affectedResult[0][1]) {
+    if (!affectedCount) {
       // Если UserRecords не нашлось, нужно его создать
       try {
         const created = await UserRounds.create({

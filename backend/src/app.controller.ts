@@ -14,8 +14,6 @@ import { addSecondsToDate } from './utils';
 import { ConfigService } from '@nestjs/config';
 import { v4 } from 'uuid';
 
-/// <reference path="./express.d.ts" />
-
 @Controller()
 export class AppController {
   constructor(private configService: ConfigService) {}
@@ -24,34 +22,19 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/active-rounds/')
   async getActiveRounds() {
-    const roundDuration: number = this.configService.get<number>(
-      'ROUND_DURATION',
-    ) as number;
-    const cooldownDuration: number = this.configService.get<number>(
-      'COOLDOWN_DURATION',
-    ) as number;
-
-    // createdAt ... cooldownDuration ... roundDuration
-
-    const currentDate = new Date();
-    const activeDate = addSecondsToDate(currentDate, -roundDuration);
-    const earliestDate = addSecondsToDate(activeDate, -cooldownDuration);
-
     const rounds: Round[] = await Round.findAll({
-      where: { createdAt: { [Op.gte]: earliestDate } },
+      where: { endedAt: { [Op.gt]: new Date() } },
     });
 
+    const currentDate = new Date().getTime();
     const results: Array<CreationAttributes<Round> & { status: string }> = [];
-    for (const roundObj of rounds) {
-      const round: CreationAttributes<Round> = roundObj.toJSON();
-      // Round starts after cooldownDuration has passed
-      const startedAt = addSecondsToDate(
-        round.createdAt as Date,
-        cooldownDuration,
-      );
-      const isActive = startedAt <= earliestDate;
-      const status = isActive ? 'active' : 'cooldown';
-      results.push({ ...round, status });
+    for (const round of rounds) {
+      const isActive = round.startedAt.getTime() <= currentDate;
+      const item: CreationAttributes<Round> & { status: string } = {
+        ...round.toJSON(),
+        status: isActive ? 'active' : 'cooldown',
+      };
+      results.push(item);
     }
     return results;
   }
@@ -59,9 +42,33 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/add-round/')
   async addRound(@Req() req: Request) {
-    // @ts-ignore // а то скрипт init-db не работает
-    // if (req.user?.username !== 'admin') throw new ForbiddenException();
-    const round = await Round.create({ id: v4() });
+    // Приходится игнорировать ошибку, а то
+    // скрипт init-db всё-таки не работает
+    // не может распознать express.d.ts (что username есть у req.user)
+    // @ts-ignore
+    if (req.user?.username !== 'admin') {
+      throw new ForbiddenException();
+    }
+
+    const roundDuration: number = this.configService.get<number>(
+      'ROUND_DURATION',
+    ) as number;
+    const cooldownDuration: number = this.configService.get<number>(
+      'COOLDOWN_DURATION',
+    ) as number;
+
+    // Хранение всех трёх дат и определение их на этапе создания
+    // — большое упрощение
+    const createdAt = new Date();
+    const startedAt = addSecondsToDate(createdAt, cooldownDuration);
+    const endedAt = addSecondsToDate(startedAt, roundDuration);
+
+    const round = await Round.create({
+      id: v4(),
+      createdAt,
+      startedAt,
+      endedAt,
+    });
     return { id: round.id };
   }
 

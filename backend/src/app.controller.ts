@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   ForbiddenException,
   Get,
@@ -89,10 +90,10 @@ export class AppController {
     }
     const currentDate = new Date().getTime();
     let status: string = 'cooldown';
-    if (currentDate > round?.startedAt.getTime()) {
+    if (currentDate >= round?.startedAt.getTime()) {
       status = 'active';
     }
-    if (currentDate > round?.endedAt.getTime()) {
+    if (currentDate >= round?.endedAt.getTime()) {
       status = 'finished';
     }
     const extra: {
@@ -141,15 +142,28 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/tap/:id')
   async tap(@Req() req: Request, @Param('id') id: string) {
-    const round = await Round.findOne({ where: { id }, plain: true });
+    const round = await Round.findOne({
+      where: { id },
+      plain: true,
+      attributes: ['startedAt', 'endedAt'],
+    });
     if (!round) {
       throw new NotFoundException();
+    }
+    const currentDate = new Date().getTime();
+    // секунда которая равна startedAt — в статусе active
+    if (currentDate < round?.startedAt.getTime()) {
+      throw new BadRequestException({ status: 'cooldown' });
+    }
+    // секунда которая равна endedAt — уже в статусе finished
+    if (currentDate >= round?.endedAt.getTime()) {
+      throw new BadRequestException({ status: 'finished' });
     }
     const user: User = req.user as unknown as User;
 
     const where = {
       username: user.username,
-      roundId: round.id,
+      roundId: id,
     };
 
     // Назначение этой переменной будет ясно дальше

@@ -157,13 +157,14 @@ export class AppController {
 
     // Для начала пробуем самый короткий путь — если UserRounds уже создан
     // Здесь мы выполняем "атомарную" операцию hits = hits + 1
-    const [, affectedCount] = await UserRounds.increment(
+    const affectedResult = await UserRounds.increment(
       { hits: 1 },
       { where },
     );
-    console.log({ affectedCount });
+    console.log({ affectedResult });
 
-    if (!affectedCount) {
+    // [0][1] — affectedCount
+    if (!affectedResult[0][1]) {
       // Если UserRecords не нашлось, нужно его создать
       try {
         const created = await UserRounds.create({
@@ -208,10 +209,12 @@ export class AppController {
       );
     }
 
-    const updatedUserRound = (await UserRounds.findOne({
+    const userRounds = (await UserRounds.findOne({
       where,
-      attributes: ['score'],
+      //attributes: ['score'],
+      //plain: true,
     })) as UserRounds;
-    return updatedUserRound.score;
+    console.log({ userRounds });
+    return {};
   }
 }

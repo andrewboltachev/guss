@@ -23,12 +23,12 @@ export class UserRounds extends Model {
   @Column({
     defaultValue: 0,
   })
-  hits: number;
+  declare hits: number;
 
   // число очков =
   // число попаданий + 9 экстра на каждый 11й
   @Column({
     defaultValue: 0,
   })
-  score: number;
+  declare score: number;
 }

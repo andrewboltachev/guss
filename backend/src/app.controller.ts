@@ -2,6 +2,7 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  NotFoundException,
   Post,
   Req,
   UseGuards,
@@ -13,6 +14,8 @@ import { CreationAttributes, Op } from 'sequelize';
 import { addSecondsToDate } from './utils';
 import { ConfigService } from '@nestjs/config';
 import { v4 } from 'uuid';
+import { UserRounds } from './userrounds.model';
+import { User } from './user.model';
 
 @Controller()
 export class AppController {
@@ -42,11 +45,8 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/add-round/')
   async addRound(@Req() req: Request) {
-    // Приходится игнорировать ошибку, а то
-    // скрипт init-db всё-таки не работает
-    // не может распознать express.d.ts (что username есть у req.user)
-    // @ts-ignore
-    if (req.user?.username !== 'admin') {
+    const user: User = req.user as unknown as User;
+    if (user.username !== 'admin') {
       throw new ForbiddenException();
     }
 
@@ -57,7 +57,7 @@ export class AppController {
       'COOLDOWN_DURATION',
     ) as number;
 
-    // Хранение всех трёх дат и определение их на этапе создания
+    // Хранение всех трёх дат (и определение их на этапе создания)
     // — большое упрощение
     const createdAt = new Date();
     const startedAt = addSecondsToDate(createdAt, cooldownDuration);
@@ -75,9 +75,20 @@ export class AppController {
   // Round Page
   @UseGuards(AuthGuard('jwt'))
   @Get('/round/:id')
-  async getRound(@Req() req: Request) {
-    // if (req.user?.username !== 'admin') throw new ForbiddenException();
-    // const round = await Round.create({ id: UUIDV4() });
-    // return { id: round.id };
+  async getRound(@Req() req: Request, id: string) {
+    const round = await Round.findOne({ where: { id }, plain: true });
+    const user: User = req.user as unknown as User;
+    if (!round) {
+      throw new NotFoundException();
+    }
+    const currentDate = new Date().getTime();
+    if (currentDate > round?.endedAt.getTime()) {
+      await UserRounds.findOne({
+        where: { username: user.username },
+      });
+    }
+    return {
+      ...round,
+    };
   }
 }

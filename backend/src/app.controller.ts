@@ -139,27 +139,23 @@ export class AppController {
     }
     const user: User = req.user as unknown as User;
 
+    const where = {
+      username: user.username,
+      roundId: round.id,
+    };
+
     // Назначение этой переменной будет ясно дальше
     let needToUpdateScore: boolean = true;
 
     // Для начала пробуем самый короткий путь — если UserRounds уже создан
     // Здесь мы выполняем "атомарную" операцию hits = hits + 1
-    const [affectedRows] = await UserRounds.increment(
-      { hits: 1 },
-      {
-        where: {
-          username: user.username,
-          roundId: round.id,
-        },
-      },
-    );
+    const [affectedRows] = await UserRounds.increment({ hits: 1 }, { where });
 
     if (!affectedRows) {
       // Если UserRecords не нашлось, нужно его создать
       try {
         await UserRounds.create({
-          username: user.username,
-          roundId: round.id,
+          ...where,
           hits: 1,
           score: 1,
         });
@@ -171,24 +167,37 @@ export class AppController {
             table: string;
           };
           if (parent.constraint === 'user_rounds_pkey') {
-            // Коллизия — другой запрос уже создал, поэтому снова просто прибавляем
+            // Коллизия — другой запрос уже создал UserRecords, поэтому снова
+            // просто повторяем прибавление
+            await UserRounds.increment(
+              { hits: 1 },
+              {
+                where,
+              },
+            );
+          } else {
+            throw e;
           }
+        } else {
+          throw e;
         }
       }
     }
     if (needToUpdateScore) {
+      // Идемпотентная операция обновления score
       await UserRounds.update(
         {
-          score: literal(`hits + floor(hits / 11)`),
+          score: literal('hits + floor(hits / 11) * 9'),
         },
         {
-          where: {
-            username: user.username,
-            roundId: round.id,
-          },
+          where,
         },
       );
     }
-    return {};
+
+    const updatedUserRound = (await UserRounds.findOne({
+      where,
+    })) as UserRounds;
+    return updatedUserRound.score;
   }
 }

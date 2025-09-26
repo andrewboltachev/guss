@@ -1,64 +1,38 @@
-import "./App.css"
-import { Counter } from "./features/counter/Counter"
-import { Quotes } from "./features/quotes/Quotes"
-import logo from "./logo.svg"
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const App = () => (
-  <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <Counter />
-      <p>
-        Edit <code>src/App.tsx</code> and save to reload.
-      </p>
-      <Quotes />
-      <span>
-        <span>Learn </span>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          React
+  <div>
+    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <div className="container-fluid">
+        <a className="navbar-brand" href="#">
+          Guss
         </a>
-        <span>, </span>
-        <a
-          className="App-link"
-          href="https://redux.js.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
-          Redux
-        </a>
-        <span>, </span>
-        <a
-          className="App-link"
-          href="https://redux-toolkit.js.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Redux Toolkit
-        </a>
-        <span>, </span>
-        <a
-          className="App-link"
-          href="https://react-redux.js.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          React Redux
-        </a>
-        ,<span> and </span>
-        <a
-          className="App-link"
-          href="https://reselect.js.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Reselect
-        </a>
-      </span>
-    </header>
+          <span className="navbar-toggler-icon" />
+        </button>
+        {/*<div className="collapse navbar-collapse" id="navbarSupportedContent">*/}
+        {/*  <ul className="navbar-nav me-auto mb-2 mb-lg-0">*/}
+        {/*    <li className="nav-item">*/}
+        {/*      <a className="nav-link active" aria-current="page" href="#">*/}
+        {/*        Home*/}
+        {/*      </a>*/}
+        {/*    </li>*/}
+        {/*    <li className="nav-item">*/}
+        {/*      <a className="nav-link" href="#">*/}
+        {/*        Link*/}
+        {/*      </a>*/}
+        {/*    </li>*/}
+        {/*  </ul>*/}
+        {/*</div>*/}
+      </div>
+    </nav>
   </div>
 )

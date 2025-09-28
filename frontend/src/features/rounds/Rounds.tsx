@@ -1,13 +1,9 @@
 import type { JSX } from "react"
 import { useGetRoundsQuery } from "./roundsApiSlice"
 import { Container } from "react-bootstrap"
-import { useAppDispatch, useAppSelector } from "../../app/hooks.ts"
-import { logout } from "../auth/authSlice.ts"
 
 export const Rounds = (): JSX.Element | null => {
   const { data, isError, isLoading, isSuccess } = useGetRoundsQuery();
-  const { username } = useAppSelector(state => state.auth);
-  const dispatch = useAppDispatch();
 
   if (isError) {
     return (
@@ -31,12 +27,6 @@ export const Rounds = (): JSX.Element | null => {
         <div className="row align-items-stretch">
           <div className="col-6">
             <h3 className="my-3">Rounds List</h3>
-          </div>
-          <div className="col-6 d-flex align-items-center" style={{columnGap: 10}}>
-            <strong>Пользователь:</strong> {username}
-            <button type="button" className="btn btn-sm btn-outline-dark" onClick={() => {
-              dispatch(logout());
-            }}>Выйти</button>
           </div>
         </div>
         {data.map(({ id }) => (

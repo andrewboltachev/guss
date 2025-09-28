@@ -1,6 +1,6 @@
 import { type ChangeEvent, useState } from "react"
 import { Form, Button, Card, Alert } from "react-bootstrap"
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from "react-router-dom"
 
 // interface LoginCredentials {
 //   username: string;
@@ -23,8 +23,10 @@ interface ApiError {
 }
 
 import { useLoginMutation } from './authApi';
+import { useAppSelector } from "../../app/hooks.ts"
 
 function LoginForm() {
+  const auth = useAppSelector(state => state.auth);
   const navigate = useNavigate();
 
   const [username, setUsername] = useState<string>('');
@@ -59,6 +61,9 @@ function LoginForm() {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const errorMessage = apiError?.data?.message || 'Login failed. Please check your credentials.';
 
+  if (auth.username) {
+    return <Navigate to={`/`} />;
+  }
   return (
     <Card style={{ maxWidth: "400px", margin: "50px auto" }}>
       <Card.Body>

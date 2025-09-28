@@ -2,9 +2,9 @@ import { Navigate, Outlet } from "react-router-dom"
 import { useAppSelector } from "../../app/hooks.ts"
 
 const ProtectedRoute = () => {
-  const { username } = useAppSelector(state => state.auth)
+  const auth = useAppSelector(state => state.auth)
 
-  if (!username) {
+  if (!auth.username) {
     return (
       <Navigate to="/login" />
     )

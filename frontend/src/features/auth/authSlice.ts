@@ -8,14 +8,14 @@ interface AuthPayload {
 }
 
 interface AuthState {
-  username: string | null;
-  token: string | null;
+  username: string | undefined;
+  token: string | undefined;
   isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
   username: Cookies.get('username'),
-  token: Cookies.get('token') ?? null,
+  token: Cookies.get('token'),
   isAuthenticated: !!Cookies.get('token'),
 };
 
@@ -24,8 +24,8 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.username = null;
-      state.token = null;
+      state.username = undefined;
+      state.token = undefined;
       state.isAuthenticated = false;
 
       localStorage.removeItem('token');
@@ -41,6 +41,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true
 
         Cookies.set("token", payload.access_token)
+        Cookies.set("username", payload.access_token)
       },
     )
   },

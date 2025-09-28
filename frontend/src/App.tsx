@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, Routes } from "react-router"
 import LoginForm from "./features/auth/LoginForm.tsx"
+import Rounds from "./features/rounds/Rounds.tsx"
 
 export const App = () => (
   <div>
@@ -37,7 +38,7 @@ export const App = () => (
       </div>
     </nav>
     <Routes>
-      {/*<Route path="/" element={<HomePage />} />*/}
+      {<Route path="/" element={<Rounds />} />}
       <Route path="/login" element={<LoginForm />} />
     </Routes>
   </div>

@@ -1,29 +1,29 @@
 import type { JSX } from "react"
-import styles from "./Rounds.module.css"
 import { useGetRoundsQuery } from "./roundsApiSlice"
+import { Container } from "react-bootstrap"
 
 export const Rounds = (): JSX.Element | null => {
   const { data, isError, isLoading, isSuccess } = useGetRoundsQuery();
 
   if (isError) {
     return (
-      <div>
+      <Container className="my-3 text-black-50">
         <h1>There was an error!!!</h1>
-      </div>
+      </Container>
     )
   }
 
   if (isLoading) {
     return (
-      <div>
+      <Container className="my-3 text-black-50">
         <h1>Loading...</h1>
-      </div>
+      </Container>
     )
   }
 
   if (isSuccess) {
     return (
-      <div className={styles.container}>
+      <Container>
         <h3>Rounds:</h3>
         {data.map(({ id }) => (
           <blockquote key={id}>
@@ -33,9 +33,11 @@ export const Rounds = (): JSX.Element | null => {
             </footer>
           </blockquote>
         ))}
-      </div>
+      </Container>
     )
   }
 
   return null
 }
+
+export default Rounds;

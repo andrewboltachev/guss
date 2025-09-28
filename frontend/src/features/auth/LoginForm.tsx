@@ -27,22 +27,17 @@ import { useLoginMutation } from './authApi';
 function LoginForm() {
   const navigate = useNavigate();
 
-  // State for form credentials, explicitly typed as strings
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  // State for local form validation feedback
   const [validated, setValidated] = useState<boolean>(false);
 
-  // RTK Query mutation hook is destructured and typed by the hook itself
   const [login, { isLoading, error, isError }] = useLoginMutation();
 
-  // The submit handler event is explicitly typed as React.FormEvent<HTMLFormElement>
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget; // TypeScript infers this as HTMLFormElement
 
-    // Perform browser validation check
     if (!form.checkValidity()) {
       event.stopPropagation();
       setValidated(true);
@@ -61,6 +56,7 @@ function LoginForm() {
 
   const apiError = error as ApiError | undefined;
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const errorMessage = apiError?.data?.message || 'Login failed. Please check your credentials.';
 
   return (

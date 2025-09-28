@@ -1,9 +1,11 @@
 import type { JSX } from "react"
 import { useGetRoundsQuery } from "./roundsApiSlice"
 import { Container } from "react-bootstrap"
+import { useAppSelector } from "../../app/hooks.ts"
 
 export const Rounds = (): JSX.Element | null => {
   const { data, isError, isLoading, isSuccess } = useGetRoundsQuery();
+  const { username } = useAppSelector((state) => state.auth);
 
   if (isError) {
     return (
@@ -26,7 +28,12 @@ export const Rounds = (): JSX.Element | null => {
       <Container>
         <div className="row align-items-stretch">
           <div className="col-6">
-            <h3 className="my-3">Rounds List</h3>
+            <h3 className="my-3">Список раундов</h3>
+          </div>
+          <div className="col-6">
+            {username === 'admin' && (
+              <button type="button" className="btn btn-success">Создать раунд</button>
+            )}
           </div>
         </div>
         {data.map(({ id }) => (

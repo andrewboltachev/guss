@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from "react"
+import { type ChangeEvent, type FormEventHandler, useState } from "react"
 import { Form, Button, Card, Alert } from "react-bootstrap"
 import { Navigate, useNavigate } from "react-router-dom"
 
@@ -71,7 +71,7 @@ function LoginForm() {
 
         {isError && <Alert variant="danger">{errorMessage}</Alert>}
 
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        <Form noValidate validated={validated} onSubmit={handleSubmit as FormEventHandler<HTMLFormElement>}>
           <Form.Group className="mb-3" controlId="formUsername">
             <Form.Label>Username</Form.Label>
             <Form.Control

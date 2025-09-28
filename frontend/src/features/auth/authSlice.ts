@@ -11,7 +11,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Reducer for logging out
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -19,7 +18,6 @@ const authSlice = createSlice({
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     },
-    // Reducer to set the user object (called after successful login/profile fetch)
     setUser: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
@@ -27,7 +25,6 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Handle the successful login response from RTK Query
     builder.addMatcher(
       authApi.endpoints.login.matchFulfilled,
       (state, { payload }) => {

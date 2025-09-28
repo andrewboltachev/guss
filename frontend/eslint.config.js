@@ -53,7 +53,7 @@ const eslintConfig = config(
     },
     rules: {
       "no-undef": [0],
-      "@typescript-eslint/consistent-type-definitions": [2, "type"],
+      "@typescript-eslint/consistent-type-definitions": "off",  // [2, "type"],
       "@typescript-eslint/consistent-type-imports": [
         2,
         {
@@ -75,6 +75,8 @@ const eslintConfig = config(
           ],
         },
       ],
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
     },
   },
 

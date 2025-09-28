@@ -1,9 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Route, Routes } from "react-router"
+import LoginForm from "./features/auth/LoginForm.tsx"
 
 export const App = () => (
   <div>
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
-      <div className="container-fluid">
+      <div className="container">
         <a className="navbar-brand" href="#">
           Guss
         </a>
@@ -34,5 +36,9 @@ export const App = () => (
         {/*</div>*/}
       </div>
     </nav>
+    <Routes>
+      {/*<Route path="/" element={<HomePage />} />*/}
+      <Route path="/login" element={<LoginForm />} />
+    </Routes>
   </div>
 )

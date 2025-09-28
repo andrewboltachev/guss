@@ -10,6 +10,7 @@ import goose from '../../assets/goose.png';
 import cooldownGoose from '../../assets/cooldownGoose.png';
 import finishedGoose from '../../assets/finishedGoose.png';
 import { parseISO } from "date-fns"
+import { activate, finish } from "./roundsSlice.ts"
 
 const ActiveGoose = ({ data }: { data: FullRoundInfo }) => {
   return (
@@ -52,54 +53,6 @@ const ActiveGoose = ({ data }: { data: FullRoundInfo }) => {
 };
 
 const CooldownGoose = ({ data }: { data: FullRoundInfo }) => {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const startTime = parseISO(data.startedAt).getTime();
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    function f() {
-      //console.log("<UNK>")
-      const now = new Date().getTime();
-      if (now >= startTime) {
-        dispatch(activate());
-      }
-      timeoutRef.current = setTimeout(f, 500);
-    }
-    f();
-    return () => {
-      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
-    }
-  }, []);
-  return (
-    <Card>
-      <CardHeader className="text-center">
-        <strong>Статус: {data.status}</strong>
-      </CardHeader>
-      <CardBody className="text-center">
-        <a
-          href="#"
-          onClick={e => {
-            e.preventDefault()
-          }}
-        >
-          <img alt="Goose!" src={cooldownGoose} style={{ maxWidth: "calc(min(30vh, 80vw))" }} />
-        </a>
-      </CardBody>
-      <CardFooter className="d-flex justify-content-center align-items-center">
-        <div>
-          <table>
-            <tbody>
-              <tr>
-                <th className="p-1 text-center">Cooldown</th>
-              </tr>
-              <tr>
-                <th className="p-1 text-center">До начала — </th>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </CardFooter>
-    </Card>
-  )
 };
 
 const FinishedGoose = ({ data }: { data: FullRoundInfo }) => {
@@ -144,7 +97,33 @@ const FinishedGoose = ({ data }: { data: FullRoundInfo }) => {
 
 export const RoundDetail = (): JSX.Element | null => {
   const { id } = useParams();
-  const { data, isError, isLoading } = useGetRoundQuery(String(id), { skip : !id });
+  const { isError, isLoading } = useGetRoundQuery(String(id), { skip : !id });
+  const { round: data, startTime, endTime } = useAppSelector(state => state.activeRound)
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (!startTime || !endTime) return; // Если ещё не загрузились данные
+    function f() {
+      if (!startTime || !endTime) return; // Не должно происходить, а ! отключён в ESLint
+
+      const now = new Date().getTime();
+      if (!data) return;
+      if (now >= endTime) {
+        dispatch(finish());
+      } else {
+        if (now >= startTime) {
+          dispatch(activate());
+        }
+        timeoutRef.current = setTimeout(f, 500); // Не финиш
+      }
+    }
+    f();
+    return () => {
+      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
+    }
+  }, [startTime, endTime, data, dispatch]);
+
 
   if (isError) {
     return (
@@ -179,15 +158,37 @@ export const RoundDetail = (): JSX.Element | null => {
           </NavLink>
         </div>
       </div>
-      {status === 'active' && (
-        <ActiveGoose data={data} />
-      )}
-      {status === 'cooldown' && (
-        <CooldownGoose data={data} />
-      )}
-      {status === 'finished' && (
-        <FinishedGoose data={data} />
-      )}
+      <Card>
+        <CardHeader className="text-center">
+          <strong>Статус: {data.status}</strong>
+        </CardHeader>
+        <CardBody className="text-center">
+          <a
+            href="#"
+            onClick={e => {
+              e.preventDefault()
+            }}
+          >
+            <img alt="Goose!" src={cooldownGoose} style={{ maxWidth: "calc(min(30vh, 80vw))" }} />
+          </a>
+        </CardBody>
+        <CardFooter className="d-flex justify-content-center align-items-center">
+          <div>
+            <table>
+              <tbody>
+              <tr>
+                <th className="p-1 text-center">Cooldown</th>
+              </tr>
+              <tr>
+                <th className="p-1 text-center">До начала — </th>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </CardFooter>
+      </Card>
+
+
     </Container>
   );
 }

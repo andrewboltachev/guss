@@ -12,7 +12,9 @@ export interface RoundItem {
 }
 
 export interface FullRoundInfo extends RoundItem {
-
+  totalScore?: number;
+  bestScore?: number;
+  winnerName?: string;
 }
 
 export type RoundsListDTO = RoundItem[]

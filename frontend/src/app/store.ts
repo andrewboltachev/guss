@@ -1,11 +1,13 @@
 import { combineSlices, configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from "@reduxjs/toolkit/query"
-import { roundsApiSlice } from "../features/rounds/roundsApiSlice"
+import { roundsApi } from "../features/rounds/roundsApi.ts"
 import { authApi } from "../features/auth/authApi.ts"
 import authSlice from "../features/auth/authSlice.ts"
+import roundsSlice from "../features/rounds/roundsSlice.ts"
 
 const rootReducer = combineSlices(
-  roundsApiSlice,
+  roundsApi,
+  roundsSlice,
   authApi,
   authSlice,
 );
@@ -15,7 +17,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
   const store = configureStore({
     reducer: rootReducer,
     middleware: getDefaultMiddleware => {
-      return getDefaultMiddleware().concat(authApi.middleware).concat(roundsApiSlice.middleware);
+      return getDefaultMiddleware().concat(authApi.middleware).concat(roundsApi.middleware);
     },
     preloadedState,
   })

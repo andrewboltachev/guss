@@ -1,5 +1,5 @@
 import { type JSX, type MouseEventHandler } from "react"
-import { useAddRoundMutation, useGetRoundsQuery } from "./roundsApiSlice"
+import { useAddRoundMutation, useGetRoundsQuery } from "./roundsApi.ts"
 import { Card, CardBody, Container } from "react-bootstrap"
 import { useAppSelector } from "../../app/hooks.ts"
 import { NavLink, useNavigate } from "react-router-dom"

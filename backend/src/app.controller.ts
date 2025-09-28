@@ -185,6 +185,7 @@ export class AppController {
           roundId: round.id,
         },
       });
+      extra.bestScore ||= 0;
       extra.totalScore = await UserRounds.max('score', {
         where: {
           username: {
@@ -193,6 +194,7 @@ export class AppController {
           roundId: round.id,
         },
       });
+      extra.totalScore ||= 0;
     }
     const data: CreationAttributes<Round> & {
       status: string;

@@ -3,7 +3,7 @@ import { baseQuery } from "../../app/baseQuery.ts"
 import type { FullRoundInfo, NewRoundInfo, RoundsListDTO } from "./types.ts"
 
 
-export const roundsApiSlice = createApi({
+export const roundsApi = createApi({
   baseQuery,
   reducerPath: "roundsApi",
   endpoints: build => ({
@@ -25,4 +25,4 @@ export const roundsApiSlice = createApi({
   }),
 })
 
-export const { useGetRoundsQuery, useAddRoundMutation, useGetRoundQuery } = roundsApiSlice
+export const { useGetRoundsQuery, useAddRoundMutation, useGetRoundQuery } = roundsApi;

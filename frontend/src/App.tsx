@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { NavLink, Route, Routes } from "react-router-dom"
 import LoginForm from "./features/auth/LoginForm.tsx"
-import Rounds from "./features/rounds/RoundList.tsx"
+import RoundList from "./features/rounds/RoundList.tsx"
 import ProtectedRoute from "./features/auth/ProtectedRoute.tsx"
 import { logout } from "./features/auth/authSlice.ts"
 import { useAppDispatch, useAppSelector } from "./app/hooks.ts"
@@ -40,7 +40,7 @@ export const App = () => {
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="" element={<ProtectedRoute />}>
-          <Route path="/" element={<Rounds />} />
+          <Route path="/" element={<RoundList />} />
           <Route path="/round/:id" element={<RoundDetail />} />
         </Route>
       </Routes>

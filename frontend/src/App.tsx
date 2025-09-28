@@ -1,10 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Route, Routes } from "react-router-dom"
+import { NavLink, Route, Routes } from "react-router-dom"
 import LoginForm from "./features/auth/LoginForm.tsx"
 import Rounds from "./features/rounds/Rounds.tsx"
 import ProtectedRoute from "./features/auth/ProtectedRoute.tsx"
 import { logout } from "./features/auth/authSlice.ts"
 import { useAppDispatch, useAppSelector } from "./app/hooks.ts"
+import RoundDetail from "./features/rounds/RoundDetail.tsx"
 
 export const App = () => {
   const { username } = useAppSelector(state => state.auth);
@@ -13,9 +14,9 @@ export const App = () => {
     <div>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container">
-          <a className="navbar-brand" href="#">
+          <NavLink className="navbar-brand" to="/">
             Guss
-          </a>
+          </NavLink>
           <button
             className="navbar-toggler"
             type="button"
@@ -27,21 +28,20 @@ export const App = () => {
           >
             <span className="navbar-toggler-icon" />
           </button>
-          <div className="d-flex align-items-center justify-content-end" style={{ columnGap: 10 }}>
+          {!!username && <div className="d-flex align-items-center justify-content-end" style={{ columnGap: 10 }}>
             <strong>Пользователь:</strong> {username}
             <button type="button" className="btn btn-sm btn-outline-dark" onClick={() => {
               dispatch(logout());
             }}>Выйти
             </button>
-          </div>
-
+          </div>}
         </div>
       </nav>
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="" element={<ProtectedRoute />}>
           <Route path="/" element={<Rounds />} />
-          {/*<Route path="/round/:id" element={<Rounds />} />*/}
+          <Route path="/round/:id" element={<RoundDetail />} />
         </Route>
       </Routes>
     </div>

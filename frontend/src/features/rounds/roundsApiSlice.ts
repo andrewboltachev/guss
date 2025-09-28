@@ -16,6 +16,9 @@ export const roundsApiSlice = createApi({
     getRounds: build.query<RoundsApiResponse, void>({
       query: () => `active-rounds`,
     }),
+    getRound: build.query<Round, string>({
+      query: (id) => `round/${id}`,
+    }),
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     addRound: build.mutation<NewRoundInfo, void>({
       query: () => ({
@@ -27,4 +30,4 @@ export const roundsApiSlice = createApi({
   }),
 })
 
-export const { useGetRoundsQuery, useAddRoundMutation } = roundsApiSlice
+export const { useGetRoundsQuery, useAddRoundMutation, useGetRoundQuery } = roundsApiSlice

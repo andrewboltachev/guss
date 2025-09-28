@@ -5,7 +5,12 @@ import { useAppSelector } from "../../app/hooks.ts"
 import { useNavigate } from "react-router-dom"
 
 export const Rounds = (): JSX.Element | null => {
-  const { data, isError, isLoading, isSuccess } = useGetRoundsQuery();
+  const { data, isError, isLoading, isSuccess } = useGetRoundsQuery(undefined, {
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMountOrArgChange: true,
+    pollingInterval: 1000,
+  });
   const { username } = useAppSelector((state) => state.auth);
   const [addRound, ] = useAddRoundMutation();
   const navigate = useNavigate();
@@ -13,7 +18,7 @@ export const Rounds = (): JSX.Element | null => {
   const onNewRoundClick = async () => {
     try {
       const { id } = await addRound().unwrap();
-      await navigate(id);
+      await navigate(`/round/${id}`)
     } catch (error) {
       console.error(error); // TODO?
     }

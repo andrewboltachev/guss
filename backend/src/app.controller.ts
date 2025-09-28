@@ -28,6 +28,14 @@ import { User } from './user.model';
 export class AppController {
   constructor(private configService: ConfigService) {}
 
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/me')
+  me(@Req() req: Request) {
+    const { username }: User = req.user as unknown as User;
+    return { username };
+  }
+
   // Post List
   @UseGuards(AuthGuard('jwt'))
   @Get('/active-rounds/')

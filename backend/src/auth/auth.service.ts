@@ -41,6 +41,8 @@ export class AuthService {
       access_token: this.jwtService.sign({
         username: user.username,
       }),
+      // Можем хранить в cookie, т.к. оно Primary Key в БД
+      username: user.username,
     };
   }
 }

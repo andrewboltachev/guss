@@ -1,12 +1,12 @@
 import js from "@eslint/js"
-import vitestPlugin from "@vitest/eslint-plugin"
 import prettierConfig from "eslint-config-prettier/flat"
 import reactPlugin from "eslint-plugin-react"
 import reactHooksPlugin from "eslint-plugin-react-hooks"
 import globals from "globals"
-import { config, configs } from "typescript-eslint"
+import { configs } from "typescript-eslint"
+import { defineConfig } from "eslint/config"
 
-const eslintConfig = config(
+const eslintConfig = defineConfig(
   {
     name: "global-ignores",
     ignores: [
@@ -27,7 +27,6 @@ const eslintConfig = config(
   },
   configs.strictTypeChecked,
   configs.stylisticTypeChecked,
-  vitestPlugin.configs.recommended,
   {
     name: "eslint-plugin-react/jsx-runtime",
     ...reactPlugin.configs.flat["jsx-runtime"],

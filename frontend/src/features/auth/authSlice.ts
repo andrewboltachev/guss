@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { authApi } from "./authApi.ts"
+import Cookies from "js-cookie";
 
 interface AuthPayload {
   access_token: string;

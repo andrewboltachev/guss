@@ -1,11 +1,12 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query/react"
 import { logout } from "../features/auth/authSlice.ts"
+import Cookies from "js-cookie"
 
 const regularBaseQuery = fetchBaseQuery({
   baseUrl: 'http://localhost:3000/',
   prepareHeaders: (headers ) => {
-    const token: string | null = Cookies.get('token');
+    const token: string | undefined = Cookies.get('token');
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }

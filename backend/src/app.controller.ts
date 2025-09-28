@@ -41,7 +41,7 @@ export class AppController {
   async getActiveRounds() {
     const rounds: Round[] = await Round.findAll({
       where: { endedAt: { [Op.gt]: new Date() } },
-      order: [['startedAt', 'ASC']],
+      order: [['startedAt', 'DESC']],
     });
 
     const currentDate = new Date().getTime();
@@ -62,7 +62,7 @@ export class AppController {
   @Get('/all-rounds/')
   async getAllRounds() {
     const rounds: Round[] = await Round.findAll({
-      order: [['startedAt', 'ASC']],
+      order: [['startedAt', 'DESC']],
     });
 
     const currentDate = new Date().getTime();
@@ -95,7 +95,7 @@ export class AppController {
           { score: { [Op.gt]: 0 } },
         ],
       },
-      order: [['startedAt', 'ASC']],
+      order: [['startedAt', 'DESC']],
     });
 
     const currentDate = new Date().getTime();

@@ -53,6 +53,16 @@ const roundsSlice = createSlice({
           state.endTime = parseISO(state.round.endedAt).getTime()
         },
       )
+      .addMatcher(
+        roundsApi.endpoints.tap.matchFulfilled,
+        (state, { payload }) => {
+          if (!state.round) return
+          // На случай гонок
+          // Если есть информация о большем количестве нажатий
+          // пришла раньше — оставляем её
+          state.round.score = Math.max(payload.score, state.round.score)
+        },
+      )
   },
 })
 

@@ -2,13 +2,14 @@ import { type JSX, type MouseEventHandler } from "react"
 import { useAddRoundMutation, useGetRoundsQuery } from "./roundsApiSlice"
 import { Card, CardBody, Container } from "react-bootstrap"
 import { useAppSelector } from "../../app/hooks.ts"
-import { useNavigate } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { formatDateTimeDate } from "./utils.ts"
+import ArrowGo from "./ArrowGo.tsx"
 
 const colors: Record<string, string> = {
-  active: 'bg-success',
-  cooldown: 'bg-primary',
-  finished: 'bg-secondary',
+  active: 'success',
+  cooldown: 'primary',
+  finished: 'secondary',
 }
 
 export const RoundList = (): JSX.Element | null => {
@@ -68,23 +69,33 @@ export const RoundList = (): JSX.Element | null => {
             )}
           </div>
         </div>
-        {data.map(({ id, startedAt, endedAt, status }) => (
-          <Card key={id} className={`mb-4 bg-opacity-25 ${colors[status] || ''}`}>
-            <CardBody>
-              <pre style={{ whiteSpace: "pre" }}>
-                ● Round ID: {id}
-                <br />
-                <br />
-                Start at: {formatDateTimeDate(startedAt)}
-                <br />
-                End at: {formatDateTimeDate(endedAt)}
-                <br />
-              </pre>
-              <hr />
-              <strong>Статус:</strong> {status}
-            </CardBody>
-          </Card>
-        ))}
+        {data.map(({ id, startedAt, endedAt, status }) => {
+            const color = colors[status] || 'secondary';
+            return (
+              <Card key={id} className={`mb-4 bg-opacity-25 bg-${color}`}>
+                <CardBody>
+                <pre style={{ whiteSpace: "pre" }}>
+                  ● Round ID: {id}
+                  <br />
+                  <br />
+                  Start at: {formatDateTimeDate(startedAt)}
+                  <br />
+                  End at: {formatDateTimeDate(endedAt)}
+                  <br />
+                </pre>
+                  <hr />
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>Статус:</strong> {status}
+                    </div>
+                    <NavLink to={`/round/${String(id)}`} className={`btn btn-${color} px-5`}>
+                      <ArrowGo />
+                    </NavLink>
+                  </div>
+                </CardBody>
+              </Card>
+            );
+        })}
       </Container>
     )
   }

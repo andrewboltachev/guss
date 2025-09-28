@@ -28,7 +28,6 @@ import { User } from './user.model';
 export class AppController {
   constructor(private configService: ConfigService) {}
 
-
   @UseGuards(AuthGuard('jwt'))
   @Get('/me')
   me(@Req() req: Request) {
@@ -42,6 +41,7 @@ export class AppController {
   async getActiveRounds() {
     const rounds: Round[] = await Round.findAll({
       where: { endedAt: { [Op.gt]: new Date() } },
+      order: [['startedAt', 'ASC']],
     });
 
     const currentDate = new Date().getTime();
@@ -61,7 +61,42 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/all-rounds/')
   async getAllRounds() {
-    const rounds: Round[] = await Round.findAll({});
+    const rounds: Round[] = await Round.findAll({
+      order: [['startedAt', 'ASC']],
+    });
+
+    const currentDate = new Date().getTime();
+    const results: Array<CreationAttributes<Round> & { status: string }> = [];
+    for (const round of rounds) {
+      let status = 'cooldown';
+      if (round.startedAt.getTime() <= currentDate) {
+        status = 'active';
+      }
+      if (round.endedAt.getTime() <= currentDate) {
+        status = 'finished';
+      }
+      const item: CreationAttributes<Round> & { status: string } = {
+        ...round.toJSON(),
+        status,
+      };
+      results.push(item);
+    }
+    return results;
+  }
+
+  // Post List
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/active-and-played-rounds/')
+  async getActiveAndPlayedRounds() {
+    const rounds: Round[] = await Round.findAll({
+      where: {
+        [Op.or]: [
+          { endedAt: { [Op.gt]: new Date() } },
+          { score: { [Op.gt]: 0 } },
+        ],
+      },
+      order: [['startedAt', 'ASC']],
+    });
 
     const currentDate = new Date().getTime();
     const results: Array<CreationAttributes<Round> & { status: string }> = [];

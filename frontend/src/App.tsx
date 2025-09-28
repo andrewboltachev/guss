@@ -17,17 +17,6 @@ export const App = () => {
           <NavLink className="navbar-brand" to="/">
             Guss
           </NavLink>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
           {!!username && <div className="d-flex align-items-center justify-content-end" style={{ columnGap: 10 }}>
             <strong>Пользователь:</strong> {username}
             <button type="button" className="btn btn-sm btn-outline-dark" onClick={() => {

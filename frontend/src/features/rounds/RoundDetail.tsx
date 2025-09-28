@@ -4,6 +4,7 @@ import { Container } from "react-bootstrap"
 import { useAppSelector } from "../../app/hooks.ts"
 import { NavLink, useNavigate } from "react-router-dom"
 import { useParams } from "react-router-dom"
+import ArrowBack from "./ArrowBack.tsx"
 
 export const RoundDetail = (): JSX.Element | null => {
   const { id } = useParams();
@@ -35,7 +36,10 @@ export const RoundDetail = (): JSX.Element | null => {
             <h3 className="my-3">Раунд {id}</h3>
           </div>
           <div className="col-3 d-flex align-items-center justify-content-end">
-            <NavLink to="/">К списку раундов</NavLink>
+            <NavLink to="/" className="btn btn-outline-secondary d-inline-flex align-items-center">
+              <ArrowBack className="me-1" />
+              К списку раундов
+            </NavLink>
           </div>
         </div>
         <pre>

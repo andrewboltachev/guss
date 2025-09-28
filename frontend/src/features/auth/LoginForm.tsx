@@ -47,7 +47,7 @@ function LoginForm() {
     try {
       await login({ username, password }).unwrap();
 
-      await navigate('/dashboard', { replace: true });
+      await navigate('/', { replace: true });
 
     } catch (err) {
       console.error('Login failed:', err);

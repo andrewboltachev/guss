@@ -13,7 +13,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  username: null,
+  username: localStorage.getItem('username'),
   token: localStorage.getItem('token') ?? null,
   isAuthenticated: !!localStorage.getItem('token'),
 };
@@ -28,6 +28,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
 
       localStorage.removeItem('token');
+      localStorage.removeItem('username');
     },
   },
   extraReducers: (builder) => {

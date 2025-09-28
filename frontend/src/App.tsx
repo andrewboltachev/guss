@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Route, Routes } from "react-router"
+import { Route, Routes } from "react-router-dom"
 import LoginForm from "./features/auth/LoginForm.tsx"
 import Rounds from "./features/rounds/Rounds.tsx"
+import ProtectedRoute from "./features/auth/ProtectedRoute.tsx"
 
 export const App = () => (
   <div>
@@ -38,8 +39,11 @@ export const App = () => (
       </div>
     </nav>
     <Routes>
-      {<Route path="/" element={<Rounds />} />}
       <Route path="/login" element={<LoginForm />} />
+      <Route path="" element={<ProtectedRoute />}>
+        <Route path="/" element={<Rounds />} />
+        {/*<Route path="/round/:id" element={<Rounds />} />*/}
+      </Route>
     </Routes>
   </div>
 )

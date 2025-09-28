@@ -6,11 +6,17 @@ import { NavLink, useNavigate } from "react-router-dom"
 import { useParams } from "react-router-dom"
 import ArrowBack from "./ArrowBack.tsx"
 import type { FullRoundInfo } from "./types.ts"
-import goose from '../../assets/goose.png';
+import activeGoose from '../../assets/goose.png';
 import cooldownGoose from '../../assets/cooldownGoose.png';
 import finishedGoose from '../../assets/finishedGoose.png';
 import { parseISO } from "date-fns"
 import { activate, finish } from "./roundsSlice.ts"
+
+const images: Record<string, string> = {
+  activeGoose,
+  cooldownGoose,
+  finishedGoose,
+}
 
 const ActiveGoose = ({ data }: { data: FullRoundInfo }) => {
   return (
@@ -30,22 +36,6 @@ const ActiveGoose = ({ data }: { data: FullRoundInfo }) => {
       </CardBody>
       <CardFooter className="d-flex justify-content-center align-items-center">
         <div>
-          <table>
-            <tbody>
-            <tr>
-              <th className="p-1">Всего:</th>
-              <td className="p-1 text-end">{data.totalScore}</td>
-            </tr>
-            {!!data.winnerName && <tr>
-              <th className="p-1">Победитель — {data.winnerName}:</th>
-              <td className="p-1 text-end">{data.bestScore}</td>
-            </tr>}
-            <tr>
-              <th className="p-1">Мои очки:</th>
-              <td className="p-1 text-end">{data.score}</td>
-            </tr>
-            </tbody>
-          </table>
         </div>
       </CardFooter>
     </Card>
@@ -73,22 +63,6 @@ const FinishedGoose = ({ data }: { data: FullRoundInfo }) => {
       </CardBody>
       <CardFooter className="d-flex justify-content-center align-items-center">
         <div>
-          <table>
-            <tbody>
-              <tr>
-                <th className="p-1">Всего:</th>
-                <td className="p-1 text-end">{data.totalScore}</td>
-              </tr>
-              {!!data.winnerName && <tr>
-                <th className="p-1">Победитель — {data.winnerName}:</th>
-                <td className="p-1 text-end">{data.bestScore}</td>
-              </tr>}
-              <tr>
-                <th className="p-1">Мои очки:</th>
-                <td className="p-1 text-end">{data.score}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </CardFooter>
     </Card>
@@ -169,12 +143,30 @@ export const RoundDetail = (): JSX.Element | null => {
               e.preventDefault()
             }}
           >
-            <img alt="Goose!" src={cooldownGoose} style={{ maxWidth: "calc(min(30vh, 80vw))" }} />
+            <img alt="Goose!" src={images[`${data.status}Goose`]} style={{ maxWidth: "calc(min(30vh, 80vw))" }} />
           </a>
         </CardBody>
         <CardFooter className="d-flex justify-content-center align-items-center">
           <div>
-            <table>
+            {/* Active */}
+            {status === 'active' && <table>
+              <tbody>
+              <tr>
+                <th className="p-1">Всего:</th>
+                <td className="p-1 text-end">{data.totalScore}</td>
+              </tr>
+              {!!data.winnerName && <tr>
+                <th className="p-1">Победитель — {data.winnerName}:</th>
+                <td className="p-1 text-end">{data.bestScore}</td>
+              </tr>}
+              <tr>
+                <th className="p-1">Мои очки:</th>
+                <td className="p-1 text-end">{data.score}</td>
+              </tr>
+              </tbody>
+            </table>}
+            {/* Cooldown */}
+            {status === 'cooldown' && <table>
               <tbody>
               <tr>
                 <th className="p-1 text-center">Cooldown</th>
@@ -183,7 +175,24 @@ export const RoundDetail = (): JSX.Element | null => {
                 <th className="p-1 text-center">До начала — </th>
               </tr>
               </tbody>
-            </table>
+            </table>}
+            {/* Finished */}
+            {status === 'finished' && <table>
+              <tbody>
+              <tr>
+                <th className="p-1">Всего:</th>
+                <td className="p-1 text-end">{data.totalScore}</td>
+              </tr>
+              {!!data.winnerName && <tr>
+                <th className="p-1">Победитель — {data.winnerName}:</th>
+                <td className="p-1 text-end">{data.bestScore}</td>
+              </tr>}
+              <tr>
+                <th className="p-1">Мои очки:</th>
+                <td className="p-1 text-end">{data.score}</td>
+              </tr>
+              </tbody>
+            </table>}
           </div>
         </CardFooter>
       </Card>

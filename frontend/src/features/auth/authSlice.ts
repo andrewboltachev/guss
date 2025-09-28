@@ -1,8 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { authApi } from "./authApi.ts"
 
-const initialState = {
-  user: null,
+interface AuthPayload {
+  access_token: string;
+  username: string;
+}
+
+interface AuthState {
+  username: string | null;
+  token: string | null;
+  isAuthenticated: boolean;
+}
+
+const initialState: AuthState = {
+  username: null,
   token: localStorage.getItem('token') ?? null,
   isAuthenticated: !!localStorage.getItem('token'),
 };
@@ -12,34 +23,26 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.user = null;
+      state.username = null;
       state.token = null;
       state.isAuthenticated = false;
+
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    },
-    setUser: (state, action) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
-      localStorage.setItem('user', JSON.stringify(action.payload));
     },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
       authApi.endpoints.login.matchFulfilled,
-      (state, { payload }) => {
-        // Assuming the backend returns { token: "...", user: {...} }
-        state.token = payload.token;
-        state.user = payload.user;
-        state.isAuthenticated = true;
+      (state, { payload }: { payload: AuthPayload }) => {
+        state.token = payload.access_token
+        state.username = payload.username
+        state.isAuthenticated = true
 
-        // 🔑 Persist the token (MOST CRITICAL STEP)
-        localStorage.setItem('token', payload.token);
-        localStorage.setItem('user', JSON.stringify(payload.user));
-      }
-    );
+        localStorage.setItem("token", payload.access_token)
+      },
+    )
   },
 });
 
-export const { logout, setUser } = authSlice.actions;
-export default authSlice.reducer;
+export const { logout } = authSlice.actions;
+export default authSlice;

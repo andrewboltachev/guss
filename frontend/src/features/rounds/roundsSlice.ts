@@ -25,12 +25,18 @@ const roundsSlice = createSlice({
   initialState,
   reducers: {
     activate: (state,) => {
-      if (!state.round) return; // Не должно происходить
-      state.round.status = 'active';
+      if (!state.round) return // Не должно происходить
+      state.round.status = "active"
+    },
+    setTillStart: (state, { payload }: { payload: number }) => {
+      state.tillStart = Math.round(payload / 1000)
     },
     finish: (state,) => {
-      if (!state.round) return; // Не должно происходить
-      state.round.status = 'finished';
+      if (!state.round) return // Не должно происходить
+      state.round.status = "finished"
+    },
+    setTillEnd: (state, { payload }: { payload: number }) => {
+      state.tillEnd = Math.round(payload / 1000)
     },
   },
   extraReducers: builder => {
@@ -43,12 +49,12 @@ const roundsSlice = createSlice({
         (state, { payload }) => {
           state.round = payload
           // Кэш
-          state.startTime = parseISO(state.round.startedAt).getTime();
-          state.endTime = parseISO(state.round.endedAt).getTime();
+          state.startTime = parseISO(state.round.startedAt).getTime()
+          state.endTime = parseISO(state.round.endedAt).getTime()
         },
       )
   },
 })
 
-export const { activate, finish } = roundsSlice.actions;
+export const { activate, finish, setTillStart, setTillEnd } = roundsSlice.actions;
 export default roundsSlice;

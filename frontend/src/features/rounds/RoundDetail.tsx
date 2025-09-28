@@ -5,12 +5,10 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks.ts"
 import { NavLink, useNavigate } from "react-router-dom"
 import { useParams } from "react-router-dom"
 import ArrowBack from "./ArrowBack.tsx"
-import type { FullRoundInfo } from "./types.ts"
 import activeGoose from '../../assets/goose.png';
 import cooldownGoose from '../../assets/cooldownGoose.png';
 import finishedGoose from '../../assets/finishedGoose.png';
-import { parseISO } from "date-fns"
-import { activate, finish } from "./roundsSlice.ts"
+import { activate, finish, setTillEnd, setTillStart } from "./roundsSlice.ts"
 
 const images: Record<string, string> = {
   activeGoose,
@@ -18,61 +16,10 @@ const images: Record<string, string> = {
   finishedGoose,
 }
 
-const ActiveGoose = ({ data }: { data: FullRoundInfo }) => {
-  return (
-    <Card>
-      <CardHeader className="text-center">
-        <strong>Статус: {data.status}</strong>
-      </CardHeader>
-      <CardBody className="text-center">
-        <a
-          href="#"
-          onClick={e => {
-            e.preventDefault()
-          }}
-        >
-          <img alt="Goose!" src={goose} style={{ maxWidth: "calc(min(30vh, 80vw))" }} />
-        </a>
-      </CardBody>
-      <CardFooter className="d-flex justify-content-center align-items-center">
-        <div>
-        </div>
-      </CardFooter>
-    </Card>
-  )
-};
-
-const CooldownGoose = ({ data }: { data: FullRoundInfo }) => {
-};
-
-const FinishedGoose = ({ data }: { data: FullRoundInfo }) => {
-  return (
-    <Card>
-      <CardHeader className="text-center">
-        <strong>Статус: {data.status}</strong>
-      </CardHeader>
-      <CardBody className="text-center">
-        <a
-          href="#"
-          onClick={e => {
-            e.preventDefault()
-          }}
-        >
-          <img alt="Goose!" src={finishedGoose} style={{ maxWidth: "calc(min(30vh, 80vw))" }} />
-        </a>
-      </CardBody>
-      <CardFooter className="d-flex justify-content-center align-items-center">
-        <div>
-        </div>
-      </CardFooter>
-    </Card>
-  )
-};
-
 export const RoundDetail = (): JSX.Element | null => {
   const { id } = useParams();
   const { isError, isLoading } = useGetRoundQuery(String(id), { skip : !id });
-  const { round: data, startTime, endTime } = useAppSelector(state => state.activeRound)
+  const { round: data, startTime, endTime, tillStart, tillEnd } = useAppSelector(state => state.activeRound)
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useAppDispatch();
@@ -83,13 +30,20 @@ export const RoundDetail = (): JSX.Element | null => {
 
       const now = new Date().getTime();
       if (!data) return;
-      if (now >= endTime) {
-        dispatch(finish());
-      } else {
-        if (now >= startTime) {
-          dispatch(activate());
+      const tillEnd = endTime - now;
+      const tillStart = startTime - now;
+      console.log(tillStart, tillEnd);
+      if (tillEnd > 0) {
+        if (tillStart > 0) {
+          // cooldown
+          dispatch(setTillStart(tillStart));
+        } else {
+          dispatch(setTillEnd(tillEnd));
+          if (data.status !== 'active') dispatch(activate());
         }
         timeoutRef.current = setTimeout(f, 500); // Не финиш
+      } else {
+        if (data.status !== 'finished') dispatch(finish());
       }
     }
     f();
@@ -152,16 +106,13 @@ export const RoundDetail = (): JSX.Element | null => {
             {status === 'active' && <table>
               <tbody>
               <tr>
-                <th className="p-1">Всего:</th>
-                <td className="p-1 text-end">{data.totalScore}</td>
+                <th className="p-1 text-center">Раунд активен!</th>
               </tr>
-              {!!data.winnerName && <tr>
-                <th className="p-1">Победитель — {data.winnerName}:</th>
-                <td className="p-1 text-end">{data.bestScore}</td>
-              </tr>}
               <tr>
-                <th className="p-1">Мои очки:</th>
-                <td className="p-1 text-end">{data.score}</td>
+                <th className="p-1 text-center">Мои очки — {data.score || '⋯'}</th>
+              </tr>
+              <tr>
+                <th className="p-1 text-center">Ещё осталось: {tillEnd} сек.</th>
               </tr>
               </tbody>
             </table>}
@@ -172,7 +123,7 @@ export const RoundDetail = (): JSX.Element | null => {
                 <th className="p-1 text-center">Cooldown</th>
               </tr>
               <tr>
-                <th className="p-1 text-center">До начала — </th>
+                <th className="p-1 text-center">До начала — {tillStart} сек.</th>
               </tr>
               </tbody>
             </table>}

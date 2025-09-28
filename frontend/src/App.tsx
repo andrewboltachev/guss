@@ -27,7 +27,7 @@ export const App = () => {
           >
             <span className="navbar-toggler-icon" />
           </button>
-          <div className="col-6 d-flex align-items-center" style={{ columnGap: 10 }}>
+          <div className="d-flex align-items-center justify-content-end" style={{ columnGap: 10 }}>
             <strong>Пользователь:</strong> {username}
             <button type="button" className="btn btn-sm btn-outline-dark" onClick={() => {
               dispatch(logout());

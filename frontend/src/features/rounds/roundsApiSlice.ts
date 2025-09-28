@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
 import { baseQuery } from "../../app/baseQuery.ts"
+import type { NewRoundInfo } from "./types.ts"
 
 type Round = {
   id: number
@@ -15,7 +16,15 @@ export const roundsApiSlice = createApi({
     getRounds: build.query<RoundsApiResponse, void>({
       query: () => `active-rounds`,
     }),
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    addRound: build.mutation<NewRoundInfo, void>({
+      query: () => ({
+        url: "add-round",
+        method: "POST",
+        body: {},
+      }),
+    }),
   }),
 })
 
-export const { useGetRoundsQuery } = roundsApiSlice
+export const { useGetRoundsQuery, useAddRoundMutation } = roundsApiSlice

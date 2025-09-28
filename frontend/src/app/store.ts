@@ -30,4 +30,5 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
   return store
 }
 
+export type AppDispatch = typeof store.dispatch
 export const store = makeStore()

@@ -1,22 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from './../../app/store';
+import { createApi } from "@reduxjs/toolkit/query/react"
+import { baseQuery } from "../../app/baseQuery.ts"
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3000/',
-    prepareHeaders: (headers, { getState: () => RootState() }) => {
-      const token: string | null = (
-        getState().auth.token
-        ?? localStorage.getItem('token')
-      );
-
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials: { username: string; password: string }) => ({
@@ -26,11 +13,11 @@ export const authApi = createApi({
       }),
     }),
 
-    getProfile: builder.query({
-      query: () => 'users/profile', // e.g., GET /users/profile
+    getMe: builder.query({
+      query: () => 'me',
     }),
   }),
 });
 
 // Export hooks for usage in components
-export const { useLoginMutation, useGetProfileQuery } = authApi;
+export const { useLoginMutation, useGetMeQuery } = authApi;

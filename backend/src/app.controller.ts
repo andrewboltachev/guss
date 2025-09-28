@@ -61,9 +61,7 @@ export class AppController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/all-rounds/')
   async getAllRounds() {
-    const rounds: Round[] = await Round.findAll({
-      where: { endedAt: { [Op.gt]: new Date() } },
-    });
+    const rounds: Round[] = await Round.findAll({});
 
     const currentDate = new Date().getTime();
     const results: Array<CreationAttributes<Round> & { status: string }> = [];

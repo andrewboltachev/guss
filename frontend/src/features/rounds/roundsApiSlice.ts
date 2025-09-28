@@ -9,7 +9,7 @@ export const roundsApiSlice = createApi({
   endpoints: build => ({
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     getRounds: build.query<RoundsListDTO, void>({
-      query: () => `active-rounds`,
+      query: () => 'all-rounds',  // or 'active-rounds'
     }),
     getRound: build.query<FullRoundInfo, string>({
       query: (id) => `round/${id}`,

@@ -57,6 +57,33 @@ export class AppController {
     return results;
   }
 
+  // Post List
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/all-rounds/')
+  async getAllRounds() {
+    const rounds: Round[] = await Round.findAll({
+      where: { endedAt: { [Op.gt]: new Date() } },
+    });
+
+    const currentDate = new Date().getTime();
+    const results: Array<CreationAttributes<Round> & { status: string }> = [];
+    for (const round of rounds) {
+      let status = 'cooldown';
+      if (round.startedAt.getTime() <= currentDate) {
+        status = 'active';
+      }
+      if (round.endedAt.getTime() <= currentDate) {
+        status = 'finished';
+      }
+      const item: CreationAttributes<Round> & { status: string } = {
+        ...round.toJSON(),
+        status,
+      };
+      results.push(item);
+    }
+    return results;
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Post('/add-round/')
   async addRound(@Req() req: Request) {

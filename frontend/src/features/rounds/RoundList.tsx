@@ -1,8 +1,15 @@
 import { type JSX, type MouseEventHandler } from "react"
 import { useAddRoundMutation, useGetRoundsQuery } from "./roundsApiSlice"
-import { Container } from "react-bootstrap"
+import { Card, CardBody, Container } from "react-bootstrap"
 import { useAppSelector } from "../../app/hooks.ts"
 import { useNavigate } from "react-router-dom"
+import { formatDateTimeDate } from "./utils.ts"
+
+const colors: Record<string, string> = {
+  active: 'bg-success',
+  cooldown: 'bg-primary',
+  finished: 'bg-secondary',
+}
 
 export const RoundList = (): JSX.Element | null => {
   const { data, isError, isLoading, isSuccess } = useGetRoundsQuery(undefined, {
@@ -48,22 +55,35 @@ export const RoundList = (): JSX.Element | null => {
             <h3 className="my-3">Список раундов</h3>
           </div>
           <div className="col-6 d-flex align-items-center justify-content-end">
-            {username === 'admin' && (
+            {username === "admin" && (
               <button
                 type="button"
                 className="btn btn-success"
-                onClick={onNewRoundClick as MouseEventHandler<HTMLButtonElement>}
-              >Создать раунд</button>
+                onClick={
+                  onNewRoundClick as MouseEventHandler<HTMLButtonElement>
+                }
+              >
+                Создать раунд
+              </button>
             )}
           </div>
         </div>
-        {data.map(({ id }) => (
-          <blockquote key={id}>
-            &ldquo;{id}&rdquo;
-            <footer>
-              <cite>{'woo'}</cite>
-            </footer>
-          </blockquote>
+        {data.map(({ id, startedAt, endedAt, status }) => (
+          <Card key={id} className={`mb-4 bg-opacity-25 ${colors[status] || ''}`}>
+            <CardBody>
+              <pre style={{ whiteSpace: "pre" }}>
+                ● Round ID: {id}
+                <br />
+                <br />
+                Start at: {formatDateTimeDate(startedAt)}
+                <br />
+                End at: {formatDateTimeDate(endedAt)}
+                <br />
+              </pre>
+              <hr />
+              <strong>Статус:</strong> {status}
+            </CardBody>
+          </Card>
         ))}
       </Container>
     )

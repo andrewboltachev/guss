@@ -250,13 +250,7 @@ export class AppController {
       },
       { where, silent: true },
     );
-    console.log({ affectedCount });
 
-    // [0][1] — affectedCount
-    // affectedResult это (внутри Promise)
-    // почему-то не [affectedRows: M[], affectedCount?: number]
-    // а Array<[affectedRows: M[], affectedCount?: number]>
-    // т.е. не заявленное значение, а целый массив таких
     if (!affectedCount) {
       // Если UserRecords не нашлось, нужно его создать
       try {

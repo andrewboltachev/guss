@@ -41,7 +41,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true
 
         Cookies.set("token", payload.access_token)
-        Cookies.set("username", payload.access_token)
+        Cookies.set("username", payload.username)
       },
     )
   },

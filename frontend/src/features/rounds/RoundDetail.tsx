@@ -20,11 +20,14 @@ export const RoundDetail = (): JSX.Element | null => {
   const { id } = useParams();
   const { isError, isLoading } = useGetRoundQuery(String(id), { skip : !id });
   const { round: data, startTime, endTime, tillStart, tillEnd } = useAppSelector(state => state.activeRound)
+  const navigate = useNavigate();
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    if (!startTime || !endTime) return; // Если ещё не загрузились данные
+    if (!data || !startTime || !endTime) return; // Если ещё не загрузились данные
+    if (data.status === 'finished') return; // Для finished не запускать
+
     function f() {
       if (!startTime || !endTime) return; // Не должно происходить, а ! отключён в ESLint
 
@@ -32,7 +35,7 @@ export const RoundDetail = (): JSX.Element | null => {
       if (!data) return;
       const tillEnd = endTime - now;
       const tillStart = startTime - now;
-      console.log(tillStart, tillEnd);
+      // console.log(tillStart, tillEnd);
       if (tillEnd > 0) {
         if (tillStart > 0) {
           // cooldown
@@ -43,14 +46,15 @@ export const RoundDetail = (): JSX.Element | null => {
         }
         timeoutRef.current = setTimeout(f, 500); // Не финиш
       } else {
-        if (data.status !== 'finished') dispatch(finish());
+        // Перезагрузить, чтобы отобразилось для finished
+        void navigate(0);
       }
     }
     f();
     return () => {
       if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
     }
-  }, [startTime, endTime, data, dispatch]);
+  }, [startTime, endTime, data, dispatch, navigate]);
 
 
   if (isError) {

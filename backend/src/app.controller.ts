@@ -221,6 +221,7 @@ export class AppController {
       throw new NotFoundException();
     }
     const currentDate = new Date().getTime();
+    let outside = false;
     // секунда которая равна startedAt — в статусе active
     if (currentDate < round?.startedAt.getTime()) {
       throw new BadRequestException({ status: 'cooldown' });

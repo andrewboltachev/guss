@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
 import { baseQuery } from "../../app/baseQuery.ts"
-import type { FullRoundInfo, NewRoundInfo, RoundsListDTO } from "./types.ts"
+import type { FullRoundInfo, NewRoundInfo, RoundsListDTO, TapResult } from "./types.ts"
 
 
 export const roundsApi = createApi({
@@ -22,6 +22,12 @@ export const roundsApi = createApi({
         body: {},
       }),
     }),
+    tap: build.mutation<TapResult, string>({
+      query: (id) => ({
+        url: `tap/${id}`,
+        method: "GET",
+      }),
+    })
   }),
 })
 

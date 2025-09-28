@@ -18,3 +18,7 @@ export interface FullRoundInfo extends RoundItem {
 }
 
 export type RoundsListDTO = RoundItem[]
+
+export type TapResult = {
+  score: number;
+}

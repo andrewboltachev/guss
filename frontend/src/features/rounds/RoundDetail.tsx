@@ -1,5 +1,5 @@
-import { type JSX, type MouseEventHandler, useEffect, useRef } from "react"
-import { useAddRoundMutation, useGetRoundQuery, useGetRoundsQuery } from "./roundsApi.ts"
+import { useEffect, useRef } from "react"
+import { useGetRoundQuery } from "./roundsApi.ts"
 import { Card, CardBody, CardFooter, CardHeader, Container } from "react-bootstrap"
 import { useAppDispatch, useAppSelector } from "../../app/hooks.ts"
 import { NavLink, useNavigate } from "react-router-dom"
@@ -8,7 +8,7 @@ import ArrowBack from "./ArrowBack.tsx"
 import activeGoose from '../../assets/goose.png';
 import cooldownGoose from '../../assets/cooldownGoose.png';
 import finishedGoose from '../../assets/finishedGoose.png';
-import { activate, finish, setTillEnd, setTillStart } from "./roundsSlice.ts"
+import { activate, setTillEnd, setTillStart } from "./roundsSlice.ts"
 
 const images: Record<string, string> = {
   activeGoose,
@@ -16,7 +16,7 @@ const images: Record<string, string> = {
   finishedGoose,
 }
 
-export const RoundDetail = (): JSX.Element | null => {
+export const RoundDetail = () => {
   const { id } = useParams();
   const { isError, isLoading } = useGetRoundQuery(String(id), { skip : !id });
   const { round: data, startTime, endTime, tillStart, tillEnd } = useAppSelector(state => state.activeRound)
@@ -98,7 +98,10 @@ export const RoundDetail = (): JSX.Element | null => {
           <a
             href="#"
             onClick={e => {
-              e.preventDefault()
+              e.preventDefault();
+              if (data.status === 'active') {
+                // ...
+              }
             }}
           >
             <img alt="Goose!" src={images[`${data.status}Goose`]} style={{ maxWidth: "calc(min(30vh, 80vw))" }} />

@@ -13,9 +13,9 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  username: localStorage.getItem('username'),
-  token: localStorage.getItem('token') ?? null,
-  isAuthenticated: !!localStorage.getItem('token'),
+  username: Cookies.get('username'),
+  token: Cookies.get('token') ?? null,
+  isAuthenticated: !!Cookies.get('token'),
 };
 
 const authSlice = createSlice({
@@ -39,7 +39,7 @@ const authSlice = createSlice({
         state.username = payload.username
         state.isAuthenticated = true
 
-        localStorage.setItem("token", payload.access_token)
+        Cookies.set("token", payload.access_token)
       },
     )
   },

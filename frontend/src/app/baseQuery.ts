@@ -5,7 +5,7 @@ import { logout } from "../features/auth/authSlice.ts"
 const regularBaseQuery = fetchBaseQuery({
   baseUrl: 'http://localhost:3000/',
   prepareHeaders: (headers ) => {
-    const token: string | null = localStorage.getItem('token');
+    const token: string | null = Cookies.get('token');
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }

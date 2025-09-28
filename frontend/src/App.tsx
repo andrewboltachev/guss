@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { NavLink, Route, Routes } from "react-router-dom"
 import LoginForm from "./features/auth/LoginForm.tsx"
-import Rounds from "./features/rounds/Rounds.tsx"
+import Rounds from "./features/rounds/RoundList.tsx"
 import ProtectedRoute from "./features/auth/ProtectedRoute.tsx"
 import { logout } from "./features/auth/authSlice.ts"
 import { useAppDispatch, useAppSelector } from "./app/hooks.ts"

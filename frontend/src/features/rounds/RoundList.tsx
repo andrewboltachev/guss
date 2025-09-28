@@ -4,7 +4,7 @@ import { Container } from "react-bootstrap"
 import { useAppSelector } from "../../app/hooks.ts"
 import { useNavigate } from "react-router-dom"
 
-export const Rounds = (): JSX.Element | null => {
+export const RoundList = (): JSX.Element | null => {
   const { data, isError, isLoading, isSuccess } = useGetRoundsQuery(undefined, {
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -72,4 +72,4 @@ export const Rounds = (): JSX.Element | null => {
   return null
 }
 
-export default Rounds;
+export default RoundList;

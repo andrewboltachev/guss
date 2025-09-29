@@ -18,7 +18,12 @@ const images: Record<string, string> = {
 
 export const RoundDetail = () => {
   const { id } = useParams();
-  const { isError, isLoading } = useGetRoundQuery(String(id), { skip : !id });
+  const { isError, isLoading } = useGetRoundQuery(String(id), {
+    skip : !id,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMountOrArgChange: true,
+  });
   const { round: data, startTime, endTime, tillStart, tillEnd } = useAppSelector(state => state.activeRound)
   const navigate = useNavigate();
   const [tap, ] = useTapMutation();

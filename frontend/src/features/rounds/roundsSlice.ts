@@ -42,7 +42,12 @@ const roundsSlice = createSlice({
   extraReducers: builder => {
     builder
       .addMatcher(roundsApi.endpoints.getRound.matchPending, state => {
-        state.round = null
+        console.log('getRound.matchPending')
+        state.round = null;
+        state.tillStart = null;
+        state.tillEnd = null;
+        state.startTime = null;
+        state.endTime = null;
       })
       .addMatcher(
         roundsApi.endpoints.getRound.matchFulfilled,

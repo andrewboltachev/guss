@@ -7,7 +7,7 @@ import { formatDateTimeDate } from "./utils.ts"
 import ArrowGo from "./ArrowGo.tsx"
 
 const colors: Record<string, string> = {
-  active: 'success',
+  active: 'warning',
   cooldown: 'primary',
   finished: 'secondary',
 }

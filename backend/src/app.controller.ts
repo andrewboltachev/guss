@@ -169,6 +169,7 @@ export class AppController {
       score: number;
       totalScore?: number;
       bestScore?: number;
+      winnerName?: string;
     } = { status, score: 0 };
     const userRounds = await UserRounds.findOne({
       where: { username: user.username, roundId: round.id },
@@ -186,7 +187,24 @@ export class AppController {
         },
       });
       extra.bestScore ||= 0;
-      extra.totalScore = await UserRounds.max('score', {
+      if (extra.bestScore) {
+        // Первый user, кто не nikita
+        // со значением score, равным лучшему
+        const winner = await UserRounds.findAll({
+          where: {
+            username: {
+              [Op.ne]: 'nikita',
+            },
+            roundId: round.id,
+            score: extra.bestScore,
+          },
+          limit: 1,
+        });
+        if (winner?.length) {
+          extra.winnerName = winner[0].username;
+        }
+      }
+      extra.totalScore = await UserRounds.sum('score', {
         where: {
           username: {
             [Op.ne]: 'nikita',

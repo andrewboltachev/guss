@@ -31,4 +31,4 @@ export const roundsApi = createApi({
   }),
 })
 
-export const { useGetRoundsQuery, useAddRoundMutation, useGetRoundQuery } = roundsApi;
+export const { useGetRoundsQuery, useAddRoundMutation, useGetRoundQuery, useTapMutation } = roundsApi;

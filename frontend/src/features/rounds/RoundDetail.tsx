@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { useGetRoundQuery } from "./roundsApi.ts"
+import { useGetRoundQuery, useTapMutation } from "./roundsApi.ts"
 import { Card, CardBody, CardFooter, CardHeader, Container } from "react-bootstrap"
 import { useAppDispatch, useAppSelector } from "../../app/hooks.ts"
 import { NavLink, useNavigate } from "react-router-dom"
@@ -21,6 +21,7 @@ export const RoundDetail = () => {
   const { isError, isLoading } = useGetRoundQuery(String(id), { skip : !id });
   const { round: data, startTime, endTime, tillStart, tillEnd } = useAppSelector(state => state.activeRound)
   const navigate = useNavigate();
+  const [tap, ] = useTapMutation();
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useAppDispatch();
@@ -100,7 +101,7 @@ export const RoundDetail = () => {
             onClick={e => {
               e.preventDefault();
               if (data.status === 'active') {
-                // ...
+                void tap(id);
               }
             }}
           >

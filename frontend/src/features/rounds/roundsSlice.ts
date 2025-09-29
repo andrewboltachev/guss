@@ -31,10 +31,10 @@ const roundsSlice = createSlice({
     setTillStart: (state, { payload }: { payload: number }) => {
       state.tillStart = Math.round(payload / 1000)
     },
-    finish: (state,) => {
-      if (!state.round) return // Не должно происходить
-      state.round.status = "finished"
-    },
+    // finish: (state,) => {
+    //   if (!state.round) return // Не должно происходить
+    //   state.round.status = "finished"
+    // },
     setTillEnd: (state, { payload }: { payload: number }) => {
       state.tillEnd = Math.round(payload / 1000)
     },
@@ -66,5 +66,5 @@ const roundsSlice = createSlice({
   },
 })
 
-export const { activate, finish, setTillStart, setTillEnd } = roundsSlice.actions;
+export const { activate, setTillStart, setTillEnd } = roundsSlice.actions;
 export default roundsSlice;
